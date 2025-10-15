@@ -1,0 +1,6 @@
+# Ansible roles directory
+# Phase-specific roles created incrementally:
+# - Phase 1: system_preparation
+# - Phase 2: homebrew
+# - Phase 3-9: Development environment roles
+# - Phase 10-13: AI stack roles
