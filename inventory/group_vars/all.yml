@@ -1,0 +1,43 @@
+---
+# WSL2 DevEnv Configuration Variables
+# Version: 1.0.0
+
+# User Configuration
+dev_user: "{{ ansible_user_id }}"
+dev_home: "{{ ansible_env.HOME }}"
+dev_email: "pierre.ribeiro@example.com"
+dev_name: "Pierre Ribeiro"
+
+# System Configuration
+ubuntu_version: "24.04"
+system_timezone: "America/Sao_Paulo"
+
+# Feature Flags (enable/disable components)
+install_system_packages: true
+install_homebrew: true
+install_python_stack: true
+install_nodejs_stack: true
+install_bun: true
+install_rust_stack: true
+install_cloud_providers: false  # Enable when accounts ready
+install_iac_tools: true
+install_database_clients: true
+install_oracle_client: false    # Enable when downloaded
+install_shell_config: true
+install_productivity_tools: true
+install_ai_stack: true           # Phases 10-13
+
+# Paths
+homebrew_path: "/home/linuxbrew/.linuxbrew"
+homebrew_bin: "{{ homebrew_path }}/bin"
+oracle_client_path: "/opt/oracle"
+
+# Shell Configuration
+shell_type: "zsh"
+install_oh_my_zsh: true
+
+# Git Configuration
+git_user_name: "{{ dev_name }}"
+git_user_email: "{{ dev_email }}"
+git_default_branch: "main"
+git_editor: "code --wait"

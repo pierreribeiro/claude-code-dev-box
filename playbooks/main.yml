@@ -1,0 +1,39 @@
+---
+- name: WSL2 Ubuntu Development Environment Setup
+  hosts: localhost
+  gather_facts: yes
+  become: yes
+  
+  vars_files:
+    - ../inventory/group_vars/all.yml
+  
+  pre_tasks:
+    - name: Display environment information
+      debug:
+        msg:
+          - "Setting up development environment for {{ dev_user }}"
+          - "Home directory: {{ dev_home }}"
+          - "Ubuntu version: {{ ubuntu_version }}"
+      tags: [always]
+    
+    - name: Verify Ubuntu version
+      assert:
+        that:
+          - ansible_distribution == "Ubuntu"
+          - ansible_distribution_version == ubuntu_version
+        fail_msg: "This playbook requires Ubuntu {{ ubuntu_version }}"
+        success_msg: "Ubuntu version check passed"
+      tags: [always]
+  
+  roles:
+    - role: system_preparation
+      when: install_system_packages | bool
+      tags: [phase1, system]
+
+  post_tasks:
+    - name: Display completion message
+      debug:
+        msg:
+          - "✅ Phase 1 complete!"
+          - "Run Phase 2: ansible-playbook playbooks/main.yml --tags phase2"
+      tags: [always]
