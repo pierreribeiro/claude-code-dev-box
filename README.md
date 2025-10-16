@@ -1,7 +1,7 @@
 # WSL2 Ubuntu Development Box - Claude Code Optimized
 
-**Version**: 1.0.0  
-**Status**: Phase 0 Complete  
+**Version**: 1.0.1  
+**Status**: Phase 0 Complete (Bug Fix: PEP 668)  
 **Target**: WSL2 Ubuntu 24.04 LTS
 
 ## 🎯 Overview
@@ -70,7 +70,7 @@ ansible-playbook playbooks/main.yml --tags phase1,phase2
 
 ## 📊 Installation Progress
 
-- [x] **Phase 0**: Bootstrap & Git Repository ✅
+- [x] **Phase 0**: Bootstrap & Git Repository ✅ **COMPLETE** (v0.1.1 - Bug Fix: PEP 668)
 - [ ] **Phase 1**: System Preparation (apt packages)
 - [ ] **Phase 2**: Homebrew Installation
 - [ ] **Phase 3**: Core Tools (git, gh, jq, yq, tree)
@@ -84,6 +84,17 @@ ansible-playbook playbooks/main.yml --tags phase1,phase2
 - [ ] **Phase 11**: Task Master
 - [ ] **Phase 12**: SuperClaude Framework
 - [ ] **Phase 13**: Claude Code CLI & Gemini CLI
+
+## 📝 Recent Updates
+
+### 2025-10-15: Phase 0 Bug Fix - Ubuntu 24.04 PEP 668 Compliance
+- **Issue**: `externally-managed-environment` error when installing pipx via pip
+- **Solution**: Changed pipx installation to apt-based (`sudo apt install pipx`)
+- **Tag**: `v0.1.1-bugfix-pep668`
+- **Tests**: 17/17 PASS on Ubuntu 24.04 LTS
+- **Commits**: 
+  - [Fix commit](https://github.com/pierreribeiro/claude-code-dev-box/commit/a4ee241)
+  - [Docs commit](https://github.com/pierreribeiro/claude-code-dev-box/commit/672bf30)
 
 ## 📁 Repository Structure
 
@@ -174,5 +185,5 @@ Optimized for Claude Code agentic development workflows
 
 ---
 
-**Current Status**: Phase 0 Complete ✅  
+**Current Status**: Phase 0 Complete ✅ (v0.1.1 - PEP 668 Bug Fix)  
 **Next Action**: Review README → Run `./scripts/phase-0-bootstrap.sh` → Proceed to Phase 1
