@@ -2,7 +2,7 @@
 # Phase 0: Bootstrap & Git Repository Setup
 # WSL2 Ubuntu 24.04 Development Environment
 # Author: Pierre Ribeiro
-# Version: 1.0.0
+# Version: 1.0.1 (Bug Fix: PEP 668 Compliance)
 
 set -e  # Exit on error
 set -u  # Exit on undefined variable
@@ -87,16 +87,33 @@ sudo apt install -y \
     software-properties-common \
     python3 \
     python3-pip \
-    python3-venv
+    python3-venv \
+    python3-full
 log_success "Prerequisites installed"
 
-# Install pipx (for Ansible)
-log_info "Installing pipx..."
+# FIXED: Install pipx via apt (Ubuntu 24.04 PEP 668 compliant)
+# Issue: PEP 668 blocks pip install in externally-managed environments
+# Solution: Use apt package manager for system-wide Python tools
+# Reference: https://peps.python.org/pep-0668/
+log_info "Installing pipx via apt..."
 if ! command -v pipx &> /dev/null; then
-    python3 -m pip install --user pipx
-    python3 -m pipx ensurepath
+    sudo apt install -y pipx
+    
+    # Ensure pipx is in PATH
+    log_info "Configuring pipx PATH..."
+    pipx ensurepath
+    
+    # Source the PATH updates (for current session)
     export PATH="$HOME/.local/bin:$PATH"
-    log_success "pipx installed"
+    
+    # Verify pipx installation
+    log_info "Verifying pipx installation..."
+    if command -v pipx &> /dev/null; then
+        log_success "pipx installed successfully: $(pipx --version)"
+    else
+        log_error "pipx installation failed"
+        exit 1
+    fi
 else
     log_info "pipx already installed: $(pipx --version)"
 fi
