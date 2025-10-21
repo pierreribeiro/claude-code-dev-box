@@ -38,6 +38,6 @@
     - name: Display completion message
       debug:
         msg:
-          - "âœ… Phases complete!"
-          - "Run next phase: ansible-playbook playbooks/main.yml --tags phaseN"
+          - "[OK] Phases complete!"
+          - "Run next phase: ansible-playbook playbooks/main.yml --tags phase3"
       tags: [always]
