@@ -5,7 +5,7 @@
 # User Configuration - HARDCODED to avoid become context capture
 dev_user: "pierrecr"  # FIXED: Was {{ ansible_user_id }} which resolved to 'root'
 dev_home: "/home/pierrecr"  # FIXED: Was {{ ansible_env.HOME }} which resolved to '/root'
-dev_email: "pierre.ribeiro@example.com"
+dev_email: "pierre.ribeiro@gmail.com"
 dev_name: "Pierre Ribeiro"
 
 # System Configuration
