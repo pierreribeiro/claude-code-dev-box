@@ -1,10 +1,10 @@
 ---
 # WSL2 DevEnv Configuration Variables
-# Version: 1.0.1 (Phase 2: Added Homebrew configuration)
+# Version: 1.0.2 (Phase 2: Fixed become context issue)
 
-# User Configuration
-dev_user: "{{ ansible_user_id }}"
-dev_home: "{{ ansible_env.HOME }}"
+# User Configuration - HARDCODED to avoid become context capture
+dev_user: "pierrecr"  # FIXED: Was {{ ansible_user_id }} which resolved to 'root'
+dev_home: "/home/pierrecr"  # FIXED: Was {{ ansible_env.HOME }} which resolved to '/root'
 dev_email: "pierre.ribeiro@example.com"
 dev_name: "Pierre Ribeiro"
 
