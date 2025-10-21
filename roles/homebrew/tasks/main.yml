@@ -10,7 +10,6 @@
     url: "{{ homebrew_installer_url }}"
     dest: /tmp/homebrew-install.sh
     mode: '0755'
-    checksum: "{{ homebrew_installer_checksum }}"
   when: not homebrew_check.stat.exists
   become: no
 
