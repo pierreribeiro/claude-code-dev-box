@@ -4,11 +4,7 @@
 
 - name: Install core development tools via Homebrew
   community.general.homebrew:
-    name:
-      - gh
-      - jq
-      - yq
-      - tree
+    name: "{{ core_tools }}"
     state: present
     update_homebrew: false
   become: no
@@ -30,23 +26,33 @@
 
 - name: Verify tool installations
   ansible.builtin.command: "{{ item }} --version"
-  loop:
-    - gh
-    - jq
-    - yq
-    - tree
+  loop: "{{ core_tools }}"
   register: tool_versions
   changed_when: false
   failed_when: false
   become: no
   tags: [verify]
 
-- name: Display tool versions
+- name: Display tool versions (successful installations)
   ansible.builtin.debug:
     msg: "{{ item.item }}: {{ item.stdout_lines[0] | default('not installed') }}"
   loop: "{{ tool_versions.results }}"
   when: item.rc == 0
   tags: [verify]
+
+- name: Display tool installation failures
+  ansible.builtin.debug:
+    msg: "{{ item.item }}: installation failed (rc={{ item.rc }})"
+  loop: "{{ tool_versions.results }}"
+  when: item.rc != 0
+  tags: [verify]
+
+- name: Check GitHub CLI authentication instructions file
+  stat:
+    path: "{{ dev_home }}/gh-auth-instructions.txt"
+  register: gh_auth_file
+  become: no
+  tags: [configure]
 
 - name: Create GitHub CLI authentication instructions
   ansible.builtin.copy:
@@ -68,4 +74,5 @@
     owner: "{{ dev_user }}"
     mode: '0644'
   become: no
+  when: not gh_auth_file.stat.exists
   tags: [configure]
