@@ -1,0 +1,9 @@
+---
+# Core Tools Variables
+
+# Tools list
+core_tools:
+  - gh
+  - jq
+  - yq
+  - tree
