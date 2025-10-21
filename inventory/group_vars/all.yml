@@ -1,6 +1,6 @@
 ---
 # WSL2 DevEnv Configuration Variables
-# Version: 1.0.0
+# Version: 1.0.1 (Phase 2: Added Homebrew configuration)
 
 # User Configuration
 dev_user: "{{ ansible_user_id }}"

@@ -30,10 +30,14 @@
       when: install_system_packages | bool
       tags: [phase1, system]
 
+    - role: homebrew
+      when: install_homebrew | bool
+      tags: [phase2, homebrew]
+
   post_tasks:
     - name: Display completion message
       debug:
         msg:
-          - "✅ Phase 1 complete!"
-          - "Run Phase 2: ansible-playbook playbooks/main.yml --tags phase2"
+          - "âœ… Phases complete!"
+          - "Run next phase: ansible-playbook playbooks/main.yml --tags phaseN"
       tags: [always]
