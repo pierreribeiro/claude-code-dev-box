@@ -12,4 +12,5 @@ dev_home: "{{ ansible_env.HOME }}"
 
 # Homebrew installer settings
 homebrew_installer_url: "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
-homebrew_installer_checksum: "sha256:https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh.sha256"
+# Note: Homebrew does not provide checksums for install.sh
+# Security is maintained by using HTTPS and official GitHub repository
