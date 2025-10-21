@@ -35,11 +35,31 @@
   become: no
   changed_when: false
 
+- name: Detect user shell
+  shell: "getent passwd {{ dev_user }} | cut -d: -f7 | xargs basename"
+  register: user_shell
+  changed_when: false
+  become: no
+
+- name: Determine shell configuration file
+  set_fact:
+    dev_user_shell_config: |
+      {%- if user_shell.stdout == 'zsh' -%}
+      .zshrc
+      {%- elif user_shell.stdout == 'bash' -%}
+      .bashrc
+      {%- elif user_shell.stdout == 'ksh' -%}
+      .kshrc
+      {%- else -%}
+      .bashrc
+      {%- endif -%}
+
 - name: Add Homebrew to user shell configuration
   lineinfile:
-    path: "/home/{{ dev_user }}/.bashrc"
+    path: "{{ dev_home }}/{{ dev_user_shell_config | trim }}"
     line: 'eval "$({{ homebrew_bin }}/brew shellenv)"'
     create: yes
+    state: present
   become: no
 
 - name: Verify Homebrew installation
