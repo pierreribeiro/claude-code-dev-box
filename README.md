@@ -1,7 +1,7 @@
 # WSL2 Ubuntu Development Box - Claude Code Optimized
 
-**Version**: 1.0.1  
-**Status**: Phase 0 Complete (Bug Fix: PEP 668)  
+**Version**: 1.0.2  
+**Status**: Phase 0 Complete ✅ | Phase 1 Ready ⚡  
 **Target**: WSL2 Ubuntu 24.04 LTS
 
 ## 🎯 Overview
@@ -41,7 +41,7 @@ Layer 1: System Foundation (Phases 0-2)
 - Internet connectivity
 - User has sudo privileges
 
-### Phase 0: Bootstrap
+### Phase 0: Bootstrap (Complete ✅)
 
 ```bash
 # Clone repository
@@ -61,18 +61,35 @@ chmod +x scripts/*.sh
 
 **Expected outcome**: Git repository initialized, Ansible installed, directory structure created.
 
-### Phases 1-2: System Foundation (Next Steps)
+### Phase 1: System Preparation (Ready ⚡)
 
 ```bash
-# After Phase 0 completes
-ansible-playbook playbooks/main.yml --tags phase1,phase2
+# After Phase 0 completes, update repository
+cd ~/claude-code-dev-box
+git pull origin develop
+
+# Execute Phase 1 (installs build-essential, libraries, utilities)
+ansible-playbook playbooks/main.yml --tags phase1 --ask-become-pass
+
+# Verify installation
+dpkg -l | grep build-essential
+gcc --version
+```
+
+**Expected outcome**: Build tools, development libraries, and utilities installed.
+
+### Phase 2: Homebrew Installation (Next)
+
+```bash
+# After Phase 1 completes
+ansible-playbook playbooks/main.yml --tags phase2 --ask-become-pass
 ```
 
 ## 📊 Installation Progress
 
 - [x] **Phase 0**: Bootstrap & Git Repository ✅ **COMPLETE** (v0.1.1 - Bug Fix: PEP 668)
-- [ ] **Phase 1**: System Preparation (apt packages)
-- [ ] **Phase 2**: Homebrew Installation
+- [x] **Phase 1**: System Preparation (apt packages) ✅ **FIXED** (v1.0.1 - Sudo + Callback)
+- [ ] **Phase 2**: Homebrew Installation ⏳ **NEXT**
 - [ ] **Phase 3**: Core Tools (git, gh, jq, yq, tree)
 - [ ] **Phase 4**: Language Runtimes (Python, Node.js, Rust, Bun)
 - [ ] **Phase 5**: Cloud Provider CLIs
@@ -87,6 +104,16 @@ ansible-playbook playbooks/main.yml --tags phase1,phase2
 
 ## 📝 Recent Updates
 
+### 2025-10-20: Phase 1 Bug Fix - Ansible Configuration
+- **Issue 1**: `sudo: a password is required` error during playbook execution
+- **Solution 1**: Changed `become_ask_pass = True` in ansible.cfg
+- **Issue 2**: Deprecated `community.general.yaml` callback warning
+- **Solution 2**: Updated to `ansible.builtin.default` with `result_format = yaml`
+- **Version**: v1.0.1 (ansible.cfg fixes)
+- **Commits**: 
+  - [Ansible fix commit](https://github.com/pierreribeiro/claude-code-dev-box/commit/142eaf1)
+  - [Docs update commit](https://github.com/pierreribeiro/claude-code-dev-box/commit/7100332)
+
 ### 2025-10-15: Phase 0 Bug Fix - Ubuntu 24.04 PEP 668 Compliance
 - **Issue**: `externally-managed-environment` error when installing pipx via pip
 - **Solution**: Changed pipx installation to apt-based (`sudo apt install pipx`)
@@ -100,7 +127,7 @@ ansible-playbook playbooks/main.yml --tags phase1,phase2
 
 ```
 claude-code-dev-box/
-├── ansible.cfg                   # Ansible configuration (Phase 1)
+├── ansible.cfg                   # Ansible configuration (Fixed ✅)
 ├── README.md                     # This file
 ├── .gitignore                    # Git ignore rules
 │
@@ -108,11 +135,12 @@ claude-code-dev-box/
 │   └── main.yml                 # Master playbook (Phase 1+)
 │
 ├── roles/                        # Ansible roles
-│   └── [Phase-specific roles]   # Created incrementally
+│   ├── system_preparation/      # Phase 1 role ✅
+│   └── [Future roles]           # Created incrementally
 │
 ├── inventory/                    # Environment inventories
-│   ├── hosts.yml                # Localhost inventory (Phase 1)
-│   └── group_vars/              # Variables (Phase 1)
+│   ├── hosts.yml                # Localhost inventory ✅
+│   └── group_vars/              # Variables ✅
 │       └── all.yml
 │
 ├── scripts/                      # Utility scripts
@@ -123,6 +151,8 @@ claude-code-dev-box/
 ├── docs/                         # Documentation
 │   ├── PRD_WSL2_ClaudeCode_DevBox_Unified_v1.0.0.md
 │   ├── control/                 # Phase control artifacts
+│   │   ├── phase-0-control.md  ✅
+│   │   └── phase-1-control.md  ✅
 │   └── migration/               # Context migration artifacts
 │
 ├── files/                        # Static files for deployment
@@ -136,7 +166,37 @@ claude-code-dev-box/
 - **Main PRD**: [`docs/PRD_WSL2_ClaudeCode_DevBox_Unified_v1.0.0.md`](docs/PRD_WSL2_ClaudeCode_DevBox_Unified_v1.0.0.md)
 - **Architecture**: [`docs/wsl2-ubuntu-devenv-architecture.md`](docs/wsl2-ubuntu-devenv-architecture.md)
 - **Phase Control**: `docs/control/phase-N-control.md` (generated per phase)
-- **Context Migration**: `docs/migration/phase-N-migration.md` (generated per phase)
+- **Phase 0 Control**: [`docs/control/phase-0-control.md`](docs/control/phase-0-control.md) ✅
+- **Phase 1 Control**: [`docs/control/phase-1-control.md`](docs/control/phase-1-control.md) ✅
+
+## ⚡ Phase 1 Execution Guide
+
+### Command to Execute Phase 1
+```bash
+cd ~/claude-code-dev-box
+git pull origin develop
+ansible-playbook playbooks/main.yml --tags phase1 --ask-become-pass
+```
+
+### Expected Results
+```bash
+# After successful execution:
+$ dpkg -l | grep build-essential
+ii  build-essential  12.10ubuntu1  amd64  Informational list
+
+$ gcc --version
+gcc (Ubuntu 13.2.0-23ubuntu4) 13.2.0
+
+$ which git curl wget
+/usr/bin/git
+/usr/bin/curl
+/usr/bin/wget
+```
+
+### What Gets Installed (~300-400 MB)
+- **Build Tools**: gcc, g++, make, build-essential
+- **Development Libraries**: libssl-dev, libffi-dev, libreadline-dev, libsqlite3-dev, zlib1g-dev
+- **Utilities**: vim, nano, htop, net-tools, compression tools
 
 ## ⏱️ Estimated Timeline
 
@@ -166,6 +226,18 @@ claude-code-dev-box/
 - **Rollback Capable**: Git tags enable phase-by-phase rollback
 - **Production Ready**: Error handling, validation, documentation built-in
 
+## 🐛 Known Issues & Fixes
+
+### Phase 1 - Ansible Configuration (Fixed ✅)
+- **Issue**: Sudo password required error
+- **Fix**: Use `--ask-become-pass` flag (updated in ansible.cfg)
+- **Status**: Resolved in commit 142eaf1
+
+### Phase 0 - PEP 668 Compliance (Fixed ✅)
+- **Issue**: pipx installation via pip blocked on Ubuntu 24.04
+- **Fix**: Install pipx via apt package manager
+- **Status**: Resolved in v0.1.1-bugfix-pep668
+
 ## 🤝 Contributing
 
 This is a personal development environment setup. For issues or suggestions:
@@ -185,5 +257,11 @@ Optimized for Claude Code agentic development workflows
 
 ---
 
-**Current Status**: Phase 0 Complete ✅ (v0.1.1 - PEP 668 Bug Fix)  
-**Next Action**: Review README → Run `./scripts/phase-0-bootstrap.sh` → Proceed to Phase 1
+**Current Status**: 
+- ✅ Phase 0 Complete (v0.1.1 - PEP 668 Fix)
+- ✅ Phase 1 Ready for Execution (v1.0.1 - Ansible Config Fixed)
+
+**Next Action**: Execute Phase 1 → `ansible-playbook playbooks/main.yml --tags phase1 --ask-become-pass`
+
+**Git Repository**: https://github.com/pierreribeiro/claude-code-dev-box  
+**Branch**: develop
