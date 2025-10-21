@@ -37,7 +37,7 @@
 
 - name: Add Homebrew to user shell configuration
   lineinfile:
-    path: "{{ ansible_facts.user_dir }}/.bashrc"
+    path: "/home/{{ dev_user }}/.bashrc"
     line: 'eval "$({{ homebrew_bin }}/brew shellenv)"'
     create: yes
   become: no
