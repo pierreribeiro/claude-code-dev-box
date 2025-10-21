@@ -1,6 +1,6 @@
 ---
 # WSL2 DevEnv Configuration Variables
-# Version: 1.0.2 (Phase 2: Fixed become context issue)
+# Version: 1.1.0 (Phase 3: Added core_tools flag and git configuration)
 
 # User Configuration - HARDCODED to avoid become context capture
 dev_user: "pierrecr"  # FIXED: Was {{ ansible_user_id }} which resolved to 'root'
@@ -15,6 +15,7 @@ system_timezone: "America/Sao_Paulo"
 # Feature Flags (enable/disable components)
 install_system_packages: true
 install_homebrew: true
+install_core_tools: true
 install_python_stack: true
 install_nodejs_stack: true
 install_bun: true
