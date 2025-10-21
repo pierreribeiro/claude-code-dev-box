@@ -34,10 +34,14 @@
       when: install_homebrew | bool
       tags: [phase2, homebrew]
 
+    - role: core_tools
+      when: install_core_tools | bool
+      tags: [phase3, core-tools]
+
   post_tasks:
     - name: Display completion message
       debug:
         msg:
           - "[OK] Phases complete!"
-          - "Run next phase: ansible-playbook playbooks/main.yml --tags phase3"
+          - "Run next phase: ansible-playbook playbooks/main.yml --tags phase4"
       tags: [always]
