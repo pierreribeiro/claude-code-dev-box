@@ -46,8 +46,15 @@
   command: "{{ homebrew_bin }}/brew --version"
   register: brew_version
   changed_when: false
+  failed_when: false
   become: no
 
 - name: Display Homebrew version
   debug:
-    msg: "Homebrew installed: {{ brew_version.stdout_lines[0] }}"
+    msg: "Homebrew installed: {{ brew_version.stdout | default('version check failed') }}"
+  when: brew_version.rc == 0
+
+- name: Fail if Homebrew installation failed
+  fail:
+    msg: "Homebrew installation failed. Error: {{ brew_version.stderr | default('Unknown error') }}"
+  when: brew_version.rc != 0
