@@ -1,7 +1,7 @@
 # WSL2 Ubuntu Development Box - Claude Code Optimized
 
-**Version**: 1.0.3  
-**Status**: Phase 2 Complete ✅ | Phase 3 Ready ⚡  
+**Version**: 1.1.0  
+**Status**: Phase 3 Complete ✅ | Phase 4 Ready ⚡  
 **Target**: WSL2 Ubuntu 24.04 LTS
 
 ## 🎯 Overview
@@ -18,6 +18,7 @@ Layer 3: AI Development Stack (Phases 10-13)
 └── Claude Code CLI + Gemini CLI
 
 Layer 2: Development Environment (Phases 3-9)
+├── Core Tools: git, gh, jq, yq, tree ✅
 ├── Languages: Python 3.12, Node.js LTS, Rust, Bun
 ├── Cloud: gcloud, aws, az, oci
 ├── IaC: Terraform, Ansible
@@ -91,11 +92,26 @@ brew --version
 
 **Expected outcome**: Homebrew installed and configured in shell.
 
-### Phase 3: Core Tools (Next ⚡)
+### Phase 3: Core Tools (Complete ✅)
 
 ```bash
 # After Phase 2 completes
 ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass
+
+# Verify tools
+gh --version
+jq --version
+yq --version
+tree --version
+```
+
+**Expected outcome**: GitHub CLI, JSON/YAML processors, and tree utility installed. Git configured globally.
+
+### Phase 4: Language Runtimes (Next ⚡)
+
+```bash
+# Coming soon - Python 3.12, Node.js, Rust, Bun
+ansible-playbook playbooks/main.yml --tags phase4 --ask-become-pass
 ```
 
 ## 📊 Installation Progress
@@ -103,8 +119,8 @@ ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass
 - [x] **Phase 0**: Bootstrap & Git Repository ✅ **COMPLETE** (v0.1.1 - Bug Fix: PEP 668)
 - [x] **Phase 1**: System Preparation (apt packages) ✅ **COMPLETE** (v1.0.1 - Sudo + Callback)
 - [x] **Phase 2**: Homebrew Installation ✅ **COMPLETE** (v1.0.0 - Variable Scope Fix)
-- [ ] **Phase 3**: Core Tools (git, gh, jq, yq, tree) ⏳ **NEXT**
-- [ ] **Phase 4**: Language Runtimes (Python, Node.js, Rust, Bun)
+- [x] **Phase 3**: Core Tools (git, gh, jq, yq, tree) ✅ **COMPLETE** (v1.1.0 - Code Review Improvements)
+- [ ] **Phase 4**: Language Runtimes (Python, Node.js, Rust, Bun) ⏳ **NEXT**
 - [ ] **Phase 5**: Cloud Provider CLIs
 - [ ] **Phase 6**: IaC Tools (Terraform, Ansible Navigator)
 - [ ] **Phase 7**: Database Clients
@@ -117,6 +133,19 @@ ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass
 
 ## 📝 Recent Updates
 
+### 2025-10-21: Phase 3 Complete - Core Tools Installation ✅
+- **Phase**: Core CLI tools (gh, jq, yq, tree) + Git configuration
+- **Code Review Improvements**:
+  1. Used `core_tools` variable instead of hardcoding tool list
+  2. Implemented idempotent `gh-auth-instructions.txt` creation (stat check)
+  3. Added failure reporting for tool verification
+  4. Enhanced Homebrew role with shell detection (bash, zsh, ksh support)
+- **Files Created**: 4 role files (tasks, handlers, vars, meta)
+- **Files Modified**: playbooks/main.yml, inventory/group_vars/all.yml, roles/homebrew/tasks/main.yml
+- **PR**: [#4](https://github.com/pierreribeiro/claude-code-dev-box/pull/4) - Merged to main
+- **Tag**: `phase-3-complete`
+- **Version**: v1.1.0
+
 ### 2025-10-21: Phase 2 Complete - Homebrew Installation
 - **Issues Fixed**: 
   1. Empty stdout_lines array in version display
@@ -125,10 +154,6 @@ ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass
 - **Root Cause**: Variables captured at play level with `become: yes` resolve in root context
 - **Solution**: Hardcoded `dev_user: "pierrecr"` and `dev_home: "/home/pierrecr"`
 - **Tag**: `phase-2-complete`
-- **Commits**: 
-  - [56b4337](https://github.com/pierreribeiro/claude-code-dev-box/commit/56b4337) - Final fix (hardcoded variables)
-  - [c717be2](https://github.com/pierreribeiro/claude-code-dev-box/commit/c717be2) - Second attempt (path pattern)
-  - [7df77b2](https://github.com/pierreribeiro/claude-code-dev-box/commit/7df77b2) - First fix (safe version display)
 
 ### 2025-10-20: Phase 1 Bug Fix - Ansible Configuration
 - **Issue 1**: `sudo: a password is required` error during playbook execution
@@ -136,18 +161,11 @@ ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass
 - **Issue 2**: Deprecated `community.general.yaml` callback warning
 - **Solution 2**: Updated to `ansible.builtin.default` with `result_format = yaml`
 - **Version**: v1.0.1 (ansible.cfg fixes)
-- **Commits**: 
-  - [142eaf1](https://github.com/pierreribeiro/claude-code-dev-box/commit/142eaf1) - Ansible fix
-  - [7100332](https://github.com/pierreribeiro/claude-code-dev-box/commit/7100332) - Docs update
 
 ### 2025-10-15: Phase 0 Bug Fix - Ubuntu 24.04 PEP 668 Compliance
 - **Issue**: `externally-managed-environment` error when installing pipx via pip
 - **Solution**: Changed pipx installation to apt-based (`sudo apt install pipx`)
 - **Tag**: `v0.1.1-bugfix-pep668`
-- **Tests**: 17/17 PASS on Ubuntu 24.04 LTS
-- **Commits**: 
-  - [a4ee241](https://github.com/pierreribeiro/claude-code-dev-box/commit/a4ee241) - Fix commit
-  - [672bf30](https://github.com/pierreribeiro/claude-code-dev-box/commit/672bf30) - Docs commit
 
 ## 📁 Repository Structure
 
@@ -158,11 +176,12 @@ claude-code-dev-box/
 ├── .gitignore                    # Git ignore rules
 │
 ├── playbooks/                    # Ansible playbooks
-│   └── main.yml                 # Master playbook (Phases 1-2) ✅
+│   └── main.yml                 # Master playbook (Phases 1-3) ✅
 │
 ├── roles/                        # Ansible roles
 │   ├── system_preparation/      # Phase 1 role ✅
 │   ├── homebrew/                # Phase 2 role ✅
+│   ├── core_tools/              # Phase 3 role ✅
 │   └── [Future roles]           # Created incrementally
 │
 ├── inventory/                    # Environment inventories
@@ -180,7 +199,8 @@ claude-code-dev-box/
 │   ├── control/                 # Phase control artifacts
 │   │   ├── phase-0-control.md  ✅
 │   │   ├── phase-1-control.md  ✅
-│   │   └── phase-2-control.md  ✅
+│   │   ├── phase-2-control.md  ✅
+│   │   └── phase-3-control.md  ✅
 │   └── migration/               # Context migration artifacts
 │
 ├── files/                        # Static files for deployment
@@ -197,41 +217,23 @@ claude-code-dev-box/
 - **Phase 0 Control**: [`docs/control/phase-0-control.md`](docs/control/phase-0-control.md) ✅
 - **Phase 1 Control**: [`docs/control/phase-1-control.md`](docs/control/phase-1-control.md) ✅
 - **Phase 2 Control**: [`docs/control/phase-2-control.md`](docs/control/phase-2-control.md) ✅
+- **Phase 3 Control**: [`docs/control/phase-3-control.md`](docs/control/phase-3-control.md) ✅
 
-## ⚡ Phase 3 Execution Guide
-
-### Command to Execute Phase 3
-```bash
-cd ~/claude-code-dev-box
-git pull origin develop
-ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass
-```
-
-### Expected Results
-```bash
-# After successful execution:
-$ brew --version
-Homebrew 4.x.x
-
-$ gh --version
-gh version 2.x.x
-
-$ jq --version
-jq-1.x
-
-$ yq --version
-yq version 4.x.x
-
-$ tree --version
-tree v2.x.x
-```
+## ⚡ Phase 3 Execution Summary
 
 ### What Gets Installed (~50-100 MB)
-- **GitHub CLI**: gh (authentication, repository operations)
-- **JSON Processor**: jq (parsing JSON data)
-- **YAML Processor**: yq (parsing YAML data)
-- **Directory Tree**: tree (visualization)
-- **Git Configuration**: Global settings (user.name, user.email)
+- **GitHub CLI** (gh): Authentication, repository operations
+- **JSON Processor** (jq): Parsing JSON data
+- **YAML Processor** (yq): Parsing YAML data
+- **Directory Tree** (tree): Visualization utility
+- **Git Configuration**: Global settings (user.name, user.email, default branch)
+
+### Improvements Made
+✅ Variable-based tool list (maintainable)  
+✅ Idempotent file creation  
+✅ Failure reporting for tools  
+✅ Shell detection for config files  
+✅ GitHub CLI authentication instructions  
 
 ## ⏱️ Estimated Timeline
 
@@ -262,6 +264,12 @@ tree v2.x.x
 - **Production Ready**: Error handling, validation, documentation built-in
 
 ## 🐛 Known Issues & Fixes
+
+### Phase 3 - Shell Configuration (Fixed ✅)
+- **Issue**: Hardcoded .bashrc doesn't work for zsh users
+- **Fix**: Shell detection via `getent passwd`, dynamic config file selection
+- **Status**: Resolved in commit fa019656
+- **Learning**: Always detect runtime environment instead of assuming defaults
 
 ### Phase 2 - Variable Scope with become (Fixed ✅)
 - **Issue**: Variables captured at play level with `become: yes` resolve in root context
@@ -302,9 +310,10 @@ Optimized for Claude Code agentic development workflows
 - ✅ Phase 0 Complete (v0.1.1 - PEP 668 Fix)
 - ✅ Phase 1 Complete (v1.0.1 - Ansible Config Fixed)
 - ✅ Phase 2 Complete (v1.0.0 - Variable Scope Fix)
+- ✅ Phase 3 Complete (v1.1.0 - Code Review Improvements)
 
-**Next Action**: Execute Phase 3 → `ansible-playbook playbooks/main.yml --tags phase3 --ask-become-pass`
+**Next Action**: Execute Phase 4 → `ansible-playbook playbooks/main.yml --tags phase4 --ask-become-pass`
 
 **Git Repository**: https://github.com/pierreribeiro/claude-code-dev-box  
 **Branch**: develop  
-**Progress**: 3/14 phases complete (21%)
+**Progress**: 4/14 phases complete (29%)
