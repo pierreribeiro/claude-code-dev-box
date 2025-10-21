@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Pierre Ribeiro
+  description: Homebrew package manager installation and configuration for WSL2 Ubuntu
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+
+dependencies: []

@@ -1,0 +1,8 @@
+---
+- name: Update Homebrew
+  command: "{{ homebrew_bin }}/brew update"
+  become: no
+
+- name: Upgrade Homebrew packages
+  command: "{{ homebrew_bin }}/brew upgrade"
+  become: no

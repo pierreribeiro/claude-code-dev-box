@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  author: Pierre Ribeiro
+  description: Core development tools installation
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+
+dependencies:
+  - role: homebrew

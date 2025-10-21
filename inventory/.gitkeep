@@ -1,0 +1,2 @@
+# Ansible inventory directory
+# Phase 1 will create hosts.yml and group_vars/all.yml

@@ -1,0 +1,66 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  tags: [apt, update]
+
+- name: Upgrade all packages
+  apt:
+    upgrade: yes
+  tags: [apt, upgrade]
+
+- name: Install build-essential and development tools
+  apt:
+    name:
+      - build-essential
+      - curl
+      - wget
+      - git
+      - ca-certificates
+      - software-properties-common
+      - apt-transport-https
+      - gnupg
+      - lsb-release
+    state: present
+  tags: [apt, build-tools]
+
+- name: Install development libraries
+  apt:
+    name:
+      - libssl-dev
+      - libffi-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - libncurses5-dev
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libxml2-dev
+      - libxmlsec1-dev
+      - liblzma-dev
+      - zlib1g-dev
+    state: present
+  tags: [apt, dev-libraries]
+
+- name: Install additional utilities
+  apt:
+    name:
+      - unzip
+      - zip
+      - tar
+      - gzip
+      - p7zip-full
+      - vim
+      - nano
+      - htop
+      - net-tools
+    state: present
+  tags: [apt, utilities]
+
+- name: Clean apt cache
+  apt:
+    autoclean: yes
+    autoremove: yes
+  tags: [apt, cleanup]

@@ -1,0 +1,80 @@
+---
+- name: Check if Homebrew is already installed
+  stat:
+    path: "{{ homebrew_bin }}/brew"
+  register: homebrew_check
+  become: no
+
+- name: Download Homebrew installation script
+  get_url:
+    url: "{{ homebrew_installer_url }}"
+    dest: /tmp/homebrew-install.sh
+    mode: '0755'
+  when: not homebrew_check.stat.exists
+  become: no
+
+- name: Install Homebrew
+  shell: |
+    NONINTERACTIVE=1 /bin/bash /tmp/homebrew-install.sh
+  args:
+    creates: "{{ homebrew_bin }}/brew"
+  when: not homebrew_check.stat.exists
+  become: no
+
+- name: Remove installation script
+  file:
+    path: /tmp/homebrew-install.sh
+    state: absent
+  when: not homebrew_check.stat.exists
+
+- name: Add Homebrew to PATH for current session
+  shell: |
+    eval "$({{ homebrew_bin }}/brew shellenv)"
+  args:
+    executable: /bin/bash
+  become: no
+  changed_when: false
+
+- name: Detect user shell
+  shell: "getent passwd {{ dev_user }} | cut -d: -f7 | xargs basename"
+  register: user_shell
+  changed_when: false
+  become: no
+
+- name: Determine shell configuration file
+  set_fact:
+    dev_user_shell_config: |
+      {%- if user_shell.stdout == 'zsh' -%}
+      .zshrc
+      {%- elif user_shell.stdout == 'bash' -%}
+      .bashrc
+      {%- elif user_shell.stdout == 'ksh' -%}
+      .kshrc
+      {%- else -%}
+      .bashrc
+      {%- endif -%}
+
+- name: Add Homebrew to user shell configuration
+  lineinfile:
+    path: "{{ dev_home }}/{{ dev_user_shell_config | trim }}"
+    line: 'eval "$({{ homebrew_bin }}/brew shellenv)"'
+    create: yes
+    state: present
+  become: no
+
+- name: Verify Homebrew installation
+  command: "{{ homebrew_bin }}/brew --version"
+  register: brew_version
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display Homebrew version
+  debug:
+    msg: "Homebrew installed: {{ brew_version.stdout | default('version check failed') }}"
+  when: brew_version.rc == 0
+
+- name: Fail if Homebrew installation failed
+  fail:
+    msg: "Homebrew installation failed. Error: {{ brew_version.stderr | default('Unknown error') }}"
+  when: brew_version.rc != 0

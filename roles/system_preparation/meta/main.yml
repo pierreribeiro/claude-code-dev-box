@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Pierre Ribeiro
+  description: System preparation for WSL2 Ubuntu development environment
+  license: MIT
+  min_ansible_version: 2.10
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+
+dependencies: []

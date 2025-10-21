@@ -1,0 +1,41 @@
+# Ansible
+*.retry
+.vault_pass
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+secrets/
+*.key
+*.pem
+
+# Task Master
+.taskmaster/
+
+# SuperClaude
+.superclaude/
+
+# Temporary
+tmp/
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Homebrew
+Brewfile.lock.json
