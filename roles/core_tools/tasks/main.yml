@@ -1,0 +1,71 @@
+---
+# Core Tools Installation
+# Install CLI tools via Homebrew
+
+- name: Install core development tools via Homebrew
+  community.general.homebrew:
+    name:
+      - gh
+      - jq
+      - yq
+      - tree
+    state: present
+    update_homebrew: false
+  become: no
+  tags: [install, tools]
+
+- name: Configure git global settings
+  community.general.git_config:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    scope: global
+  loop:
+    - { name: 'user.name', value: "{{ git_user_name }}" }
+    - { name: 'user.email', value: "{{ git_user_email }}" }
+    - { name: 'init.defaultBranch', value: "{{ git_default_branch }}" }
+    - { name: 'core.editor', value: "{{ git_editor }}" }
+    - { name: 'pull.rebase', value: 'false' }
+  become: no
+  tags: [configure, git]
+
+- name: Verify tool installations
+  ansible.builtin.command: "{{ item }} --version"
+  loop:
+    - gh
+    - jq
+    - yq
+    - tree
+  register: tool_versions
+  changed_when: false
+  failed_when: false
+  become: no
+  tags: [verify]
+
+- name: Display tool versions
+  ansible.builtin.debug:
+    msg: "{{ item.item }}: {{ item.stdout_lines[0] | default('not installed') }}"
+  loop: "{{ tool_versions.results }}"
+  when: item.rc == 0
+  tags: [verify]
+
+- name: Create GitHub CLI authentication instructions
+  ansible.builtin.copy:
+    dest: "{{ dev_home }}/gh-auth-instructions.txt"
+    content: |
+      # GitHub CLI Authentication Instructions
+      
+      To authenticate GitHub CLI, run:
+      
+      gh auth login
+      
+      Follow the prompts to:
+      1. Choose authentication method (browser or token)
+      2. Authenticate with your GitHub account
+      3. Grant necessary permissions
+      
+      Verify authentication:
+      gh auth status
+    owner: "{{ dev_user }}"
+    mode: '0644'
+  become: no
+  tags: [configure]
