@@ -1,0 +1,15 @@
+---
+# Homebrew Role Default Variables
+# These can be overridden in inventory/group_vars/all.yml
+
+# Homebrew installation paths
+homebrew_path: "/home/linuxbrew/.linuxbrew"
+homebrew_bin: "{{ homebrew_path }}/bin"
+
+# User configuration
+dev_user: "{{ ansible_user_id }}"
+dev_home: "{{ ansible_env.HOME }}"
+
+# Homebrew installer settings
+homebrew_installer_url: "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+homebrew_installer_checksum: "sha256:https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh.sha256"
