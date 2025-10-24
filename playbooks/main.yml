@@ -38,10 +38,14 @@
       when: install_core_tools | bool
       tags: [phase3, core-tools]
 
+    - role: language_runtimes
+      when: install_python_stack | bool or install_nodejs_stack | bool or install_rust_stack | bool or install_bun | bool
+      tags: [phase4, languages, runtimes]
+
   post_tasks:
     - name: Display completion message
       debug:
         msg:
-          - "[OK] Phases complete!"
-          - "Run next phase: ansible-playbook playbooks/main.yml --tags phase4"
+          - "✅ Development environment setup complete!"
+          - "Next phase: Run with --tags phase5 for cloud providers"
       tags: [always]
