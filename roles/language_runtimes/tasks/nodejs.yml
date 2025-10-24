@@ -1,0 +1,120 @@
+---
+# Node.js Ecosystem Installation
+# Components: fnm (version manager) + Node.js LTS + pnpm
+# Version: 1.0.0
+# CRITICAL ORDER: fnm → shell eval → Node.js via fnm → pnpm
+
+# Step 1: Install fnm (Fast Node Manager)
+- name: Check if fnm is already installed via Homebrew
+  command: "{{ homebrew_bin }}/brew list {{ fnm_package }}"
+  register: fnm_check
+  failed_when: false
+  changed_when: false
+  become: no
+
+- name: Install fnm via Homebrew
+  homebrew:
+    name: "{{ fnm_package }}"
+    state: present
+  when: fnm_check.rc != 0
+  become: no
+
+# Step 2: Configure fnm shell integration (CRITICAL - REQUIRES EVAL)
+- name: Configure fnm eval in shell
+  lineinfile:
+    path: "{{ shell_config_file }}"
+    line: 'eval "$(fnm env --use-on-cd)"'
+    create: yes
+    state: present
+  become: no
+
+- name: Verify fnm installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    eval "$(fnm env --use-on-cd)"
+    fnm --version
+  register: fnm_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display fnm version
+  debug:
+    msg: "fnm installed: {{ fnm_version_check.stdout }}"
+  when: fnm_version_check.rc == 0
+
+# Step 3: Install Node.js LTS via fnm
+- name: Check if Node.js is already installed via fnm
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    eval "$(fnm env --use-on-cd)"
+    fnm list
+  register: nodejs_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Install Node.js LTS via fnm
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    eval "$(fnm env --use-on-cd)"
+    fnm install --lts
+    fnm default lts-latest
+  args:
+    creates: "{{ fnm_data_dir }}/node-versions"
+  become: no
+  when: nodejs_check.stdout == ""
+
+- name: Verify Node.js installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    eval "$(fnm env --use-on-cd)"
+    node --version
+  register: nodejs_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display Node.js version
+  debug:
+    msg: "Node.js installed: {{ nodejs_version_check.stdout }}"
+  when: nodejs_version_check.rc == 0
+
+# Step 4: Install pnpm package manager
+- name: Check if pnpm is already installed via Homebrew
+  command: "{{ homebrew_bin }}/brew list {{ pnpm_package }}"
+  register: pnpm_check
+  failed_when: false
+  changed_when: false
+  become: no
+
+- name: Install pnpm via Homebrew
+  homebrew:
+    name: "{{ pnpm_package }}"
+    state: present
+  when: pnpm_check.rc != 0
+  become: no
+
+- name: Verify pnpm installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    pnpm --version
+  register: pnpm_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display pnpm version
+  debug:
+    msg: "pnpm installed: {{ pnpm_version_check.stdout }}"
+  when: pnpm_version_check.rc == 0
+
+# Final Node.js Ecosystem Verification
+- name: Verify Node.js ecosystem is functional
+  assert:
+    that:
+      - fnm_version_check.rc == 0
+      - nodejs_version_check.rc == 0
+      - pnpm_version_check.rc == 0
+    fail_msg: "Node.js ecosystem installation failed"
+    success_msg: "Node.js ecosystem (fnm + Node.js LTS + pnpm) installed successfully"
