@@ -1,0 +1,86 @@
+---
+# Python Ecosystem Installation
+# Components: Python 3.12 + uv package manager
+# Version: 1.0.0
+
+- name: Check if Python {{ python_version }} is already installed via Homebrew
+  command: "{{ homebrew_bin }}/brew list {{ python_package }}"
+  register: python_check
+  failed_when: false
+  changed_when: false
+  become: no
+
+- name: Install Python {{ python_version }} via Homebrew
+  homebrew:
+    name: "{{ python_package }}"
+    state: present
+  when: python_check.rc != 0
+  become: no
+
+- name: Verify Python installation
+  command: python3 --version
+  register: python_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display Python version
+  debug:
+    msg: "Python installed: {{ python_version_check.stdout }}"
+  when: python_version_check.rc == 0
+
+# uv Package Manager Installation
+- name: Check if uv is already installed via Homebrew
+  command: "{{ homebrew_bin }}/brew list {{ uv_package }}"
+  register: uv_check
+  failed_when: false
+  changed_when: false
+  become: no
+
+- name: Install uv package manager via Homebrew
+  homebrew:
+    name: "{{ uv_package }}"
+    state: present
+  when: uv_check.rc != 0
+  become: no
+
+# Shell Configuration for uv
+- name: Ensure uv bin directory exists
+  file:
+    path: "{{ uv_bin_path }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0755'
+  become: no
+
+- name: Configure uv PATH in shell
+  lineinfile:
+    path: "{{ shell_config_file }}"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    create: yes
+    state: present
+  become: no
+
+- name: Verify uv installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    export PATH="$HOME/.local/bin:$PATH"
+    uv --version
+  register: uv_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display uv version
+  debug:
+    msg: "uv installed: {{ uv_version_check.stdout }}"
+  when: uv_version_check.rc == 0
+
+# Final Python Ecosystem Verification
+- name: Verify Python ecosystem is functional
+  assert:
+    that:
+      - python_version_check.rc == 0
+      - uv_version_check.rc == 0
+    fail_msg: "Python ecosystem installation failed"
+    success_msg: "Python {{ python_version }} + uv package manager installed successfully"
