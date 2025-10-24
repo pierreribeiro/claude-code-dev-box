@@ -1,0 +1,72 @@
+---
+# Rust Ecosystem Installation
+# Components: Rust compiler + cargo package manager
+# Version: 1.0.0
+
+- name: Check if Rust is already installed via Homebrew
+  command: "{{ homebrew_bin }}/brew list {{ rust_package }}"
+  register: rust_check
+  failed_when: false
+  changed_when: false
+  become: no
+
+- name: Install Rust via Homebrew
+  homebrew:
+    name: "{{ rust_package }}"
+    state: present
+  when: rust_check.rc != 0
+  become: no
+
+# Shell Configuration for cargo
+- name: Ensure cargo bin directory exists
+  file:
+    path: "{{ cargo_bin_path }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0755'
+  become: no
+  when: rust_check.rc != 0
+
+- name: Configure cargo PATH in shell
+  lineinfile:
+    path: "{{ shell_config_file }}"
+    line: 'export PATH="$HOME/.cargo/bin:$PATH"'
+    create: yes
+    state: present
+  become: no
+
+- name: Verify Rust installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    export PATH="$HOME/.cargo/bin:$PATH"
+    rustc --version
+  register: rustc_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Verify cargo installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    export PATH="$HOME/.cargo/bin:$PATH"
+    cargo --version
+  register: cargo_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display Rust versions
+  debug:
+    msg:
+      - "Rust compiler: {{ rustc_version_check.stdout }}"
+      - "Cargo package manager: {{ cargo_version_check.stdout }}"
+  when: rustc_version_check.rc == 0 and cargo_version_check.rc == 0
+
+# Final Rust Ecosystem Verification
+- name: Verify Rust ecosystem is functional
+  assert:
+    that:
+      - rustc_version_check.rc == 0
+      - cargo_version_check.rc == 0
+    fail_msg: "Rust ecosystem installation failed"
+    success_msg: "Rust compiler + cargo package manager installed successfully"
