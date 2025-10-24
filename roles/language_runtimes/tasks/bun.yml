@@ -1,0 +1,40 @@
+---
+# Bun Runtime Installation
+# JavaScript/TypeScript runtime and toolkit
+# Version: 1.0.0
+
+- name: Check if Bun is already installed via Homebrew
+  command: "{{ homebrew_bin }}/brew list {{ bun_package }}"
+  register: bun_check
+  failed_when: false
+  changed_when: false
+  become: no
+
+- name: Install Bun via Homebrew
+  homebrew:
+    name: "{{ bun_package }}"
+    state: present
+  when: bun_check.rc != 0
+  become: no
+
+- name: Verify Bun installation
+  shell: |
+    {{ homebrew_bin }}/brew shellenv
+    bun --version
+  register: bun_version_check
+  changed_when: false
+  failed_when: false
+  become: no
+
+- name: Display Bun version
+  debug:
+    msg: "Bun installed: {{ bun_version_check.stdout }}"
+  when: bun_version_check.rc == 0
+
+# Final Bun Verification
+- name: Verify Bun runtime is functional
+  assert:
+    that:
+      - bun_version_check.rc == 0
+    fail_msg: "Bun runtime installation failed"
+    success_msg: "Bun JavaScript runtime installed successfully"
