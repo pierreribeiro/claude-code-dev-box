@@ -2,7 +2,7 @@
 - name: WSL2 Ubuntu Development Environment Setup
   hosts: localhost
   gather_facts: yes
-  become: yes
+  become: no  # FIXED: Default to user context, only elevate when needed
   
   vars_files:
     - ../inventory/group_vars/all.yml
@@ -11,8 +11,8 @@
     - name: Display environment information
       debug:
         msg:
-          - "Setting up development environment for {{ dev_user }}"
-          - "Home directory: {{ dev_home }}"
+          - "Setting up development environment for {{ ansible_user_id }}"
+          - "Home directory: {{ ansible_env.HOME }}"
           - "Ubuntu version: {{ ubuntu_version }}"
       tags: [always]
     
@@ -27,21 +27,29 @@
   
   roles:
     - role: system_preparation
+      become: yes  # EXPLICIT: System packages require root
       when: install_system_packages | bool
       tags: [phase1, system]
-
+    
     - role: homebrew
+      become: no   # EXPLICIT: Homebrew as user
       when: install_homebrew | bool
       tags: [phase2, homebrew]
-
+    
     - role: core_tools
+      become: no   # EXPLICIT: User-level tools
       when: install_core_tools | bool
       tags: [phase3, core-tools]
-
+    
+    - role: language_runtimes
+      become: no   # EXPLICIT: User-level language tools
+      when: install_python_stack | bool or install_nodejs_stack | bool or install_rust_stack | bool or install_bun | bool
+      tags: [phase4, languages, runtimes]
+  
   post_tasks:
     - name: Display completion message
       debug:
         msg:
-          - "[OK] Phases complete!"
-          - "Run next phase: ansible-playbook playbooks/main.yml --tags phase4"
+          - "✅ Setup complete!"
+          - "Run validation: ansible-playbook playbooks/validate.yml"
       tags: [always]

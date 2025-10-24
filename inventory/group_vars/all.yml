@@ -1,10 +1,10 @@
 ---
 # WSL2 DevEnv Configuration Variables
-# Version: 1.1.0 (Phase 3: Added core_tools flag and git configuration)
+# Version: 1.1.0 - HOTFIX: Explicit user paths
 
-# User Configuration - HARDCODED to avoid become context capture
-dev_user: "pierrecr"  # FIXED: Was {{ ansible_user_id }} which resolved to 'root'
-dev_home: "/home/pierrecr"  # FIXED: Was {{ ansible_env.HOME }} which resolved to '/root'
+# User Configuration - FIXED: Use explicit values, not dynamic variables
+dev_user: "pierrecr"  # FIXED: Explicit username
+dev_home: "/home/pierrecr"  # FIXED: Explicit home path
 dev_email: "pierre.ribeiro@gmail.com"
 dev_name: "Pierre Ribeiro"
 
@@ -21,12 +21,12 @@ install_nodejs_stack: true
 install_bun: true
 install_rust_stack: true
 install_cloud_providers: false  # Enable when accounts ready
-install_iac_tools: true
-install_database_clients: true
+install_iac_tools: false
+install_database_clients: false
 install_oracle_client: false    # Enable when downloaded
-install_shell_config: true
-install_productivity_tools: true
-install_ai_stack: true           # Phases 10-13
+install_shell_config: false
+install_productivity_tools: false
+install_ai_stack: false          # Phases 10-13
 
 # Paths
 homebrew_path: "/home/linuxbrew/.linuxbrew"
@@ -34,7 +34,7 @@ homebrew_bin: "{{ homebrew_path }}/bin"
 oracle_client_path: "/opt/oracle"
 
 # Shell Configuration
-shell_type: "zsh"
+shell_type: "bash"  # FIXED: Default to bash (user's actual shell)
 install_oh_my_zsh: true
 
 # Git Configuration
