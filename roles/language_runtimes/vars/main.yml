@@ -1,0 +1,32 @@
+---
+# Language Runtimes Variables
+# Phase 4: Python, Node.js, Rust, Bun
+# Version: 1.0.0
+
+# Python Configuration
+python_version: "3.12"
+python_package: "python@{{ python_version }}"
+
+# uv (Python package manager)
+uv_package: "uv"
+uv_bin_path: "{{ ansible_env.HOME }}/.local/bin"
+
+# Rust Configuration
+rust_package: "rust"
+cargo_bin_path: "{{ ansible_env.HOME }}/.cargo/bin"
+
+# Bun Configuration
+bun_package: "bun"
+
+# Node.js Configuration
+fnm_package: "fnm"
+fnm_data_dir: "{{ ansible_env.HOME }}/.local/share/fnm"
+nodejs_version: "lts-latest"
+pnpm_package: "pnpm"
+
+# Homebrew Configuration
+homebrew_bin: "/home/linuxbrew/.linuxbrew/bin"
+
+# Shell Configuration
+# Determined dynamically in tasks/main.yml
+# shell_config_file: Set at runtime (.bashrc or .zshrc)

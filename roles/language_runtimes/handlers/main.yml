@@ -1,0 +1,8 @@
+---
+# Language Runtimes Handlers
+# Phase 4: Python, Node.js, Rust, Bun
+# Version: 1.0.0
+
+# Currently no handlers required
+# Language installations do not require service restarts
+# Shell configuration changes require manual source or new shell

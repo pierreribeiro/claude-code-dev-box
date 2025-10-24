@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  author: Pierre Ribeiro
+  description: Language runtimes installation for WSL2 development environment
+  company: Personal Project
+  license: MIT
+  min_ansible_version: "2.10"
+  
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+        - noble
+  
+  galaxy_tags:
+    - development
+    - python
+    - nodejs
+    - rust
+    - bun
+    - wsl2
+
+dependencies:
+  - role: homebrew
+    when: install_homebrew | default(true)
