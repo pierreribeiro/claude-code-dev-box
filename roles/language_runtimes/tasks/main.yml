@@ -5,46 +5,46 @@
 
 # Shell Detection (Required for correct PATH configuration)
 - name: Detect user shell for configuration
-  shell: "getent passwd {{ ansible_user_id }} | cut -d: -f7 | xargs basename"
+  ansible.builtin.shell: "getent passwd {{ ansible_user_id }} | cut -d: -f7 | xargs basename"
   register: user_shell_detected
   changed_when: false
-  become: no
+  become: false
 
 - name: Set shell configuration file
-  set_fact:
+  ansible.builtin.set_fact:
     shell_config_file: "{{ ansible_env.HOME }}/{{ '.zshrc' if user_shell_detected.stdout == 'zsh' else '.bashrc' }}"
 
 - name: Display shell configuration file
-  debug:
+  ansible.builtin.debug:
     msg: "Configuring shell: {{ shell_config_file }}"
 
 # Language Installation Subtasks (Order-Independent)
 # Python, Rust, and Bun can be installed in parallel
 - name: Install Python ecosystem (Python 3.12 + uv)
-  include_tasks: python.yml
+  ansible.builtin.include_tasks: python.yml
   when: install_python_stack | bool
   tags: [python]
 
 - name: Install Rust ecosystem (Rust + cargo)
-  include_tasks: rust.yml
+  ansible.builtin.include_tasks: rust.yml
   when: install_rust_stack | bool
   tags: [rust]
 
 - name: Install Bun runtime
-  include_tasks: bun.yml
+  ansible.builtin.include_tasks: bun.yml
   when: install_bun | bool
   tags: [bun]
 
 # Node.js Installation (Order-Dependent - Must be after shell configuration)
 # fnm requires eval in shell, then Node.js via fnm, then pnpm
 - name: Install Node.js ecosystem (fnm + Node.js + pnpm)
-  include_tasks: nodejs.yml
+  ansible.builtin.include_tasks: nodejs.yml
   when: install_nodejs_stack | bool
   tags: [nodejs]
 
 # Final Verification
 - name: Verify all language runtimes are accessible
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Language Runtimes Installation Complete"
       - "Python: {{ python_version }}"

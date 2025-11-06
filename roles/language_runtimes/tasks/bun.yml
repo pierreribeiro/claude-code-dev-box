@@ -4,36 +4,36 @@
 # Version: 1.0.0
 
 - name: Check if Bun is already installed via Homebrew
-  command: "{{ homebrew_bin }}/brew list {{ bun_package }}"
+  ansible.builtin.command: "{{ homebrew_bin }}/brew list {{ bun_package }}"
   register: bun_check
   failed_when: false
   changed_when: false
-  become: no
+  become: false
 
 - name: Install Bun via Homebrew
-  homebrew:
+  community.general.homebrew:
     name: "{{ bun_package }}"
     state: present
   when: bun_check.rc != 0
-  become: no
+  become: false
 
 - name: Verify Bun installation
-  shell: |
+  ansible.builtin.shell: |
     {{ homebrew_bin }}/brew shellenv
     bun --version
   register: bun_version_check
   changed_when: false
   failed_when: false
-  become: no
+  become: false
 
 - name: Display Bun version
-  debug:
+  ansible.builtin.debug:
     msg: "Bun installed: {{ bun_version_check.stdout }}"
   when: bun_version_check.rc == 0
 
 # Final Bun Verification
 - name: Verify Bun runtime is functional
-  assert:
+  ansible.builtin.assert:
     that:
       - bun_version_check.rc == 0
     fail_msg: "Bun runtime installation failed"
