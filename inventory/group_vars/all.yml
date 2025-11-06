@@ -1,10 +1,12 @@
 ---
 # WSL2 DevEnv Configuration Variables
-# Version: 1.1.0 (Updated for Phase 4)
+# Version: 1.2.0 (Updated for Privilege Escalation Fix)
 
 # User Configuration
-dev_user: "{{ ansible_user_id }}"
-dev_home: "{{ ansible_env.HOME }}"
+# NOTE: These are overridden in playbook pre_tasks to handle privilege escalation
+# When running with sudo, real_user and real_home capture the actual user
+dev_user: "{{ ansible_user_id }}"  # Fallback: current user
+dev_home: "{{ ansible_env.HOME }}"  # Fallback: current home
 dev_email: "pierre.ribeiro@gmail.com"
 dev_name: "Pierre Ribeiro"
 

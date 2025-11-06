@@ -8,12 +8,27 @@
     - ../inventory/group_vars/all.yml
   
   pre_tasks:
+    # PRIVILEGE ESCALATION FIX: Capture real user before privilege escalation
+    - name: Capture real user information
+      set_fact:
+        real_user: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
+        real_home: "{{ lookup('env', 'HOME') }}"
+      become: no
+      tags: [always]
+
+    - name: Override user variables with real user
+      set_fact:
+        dev_user: "{{ real_user }}"
+        dev_home: "{{ real_home }}"
+      tags: [always]
+
     - name: Display environment information
       debug:
         msg:
           - "Setting up development environment for {{ dev_user }}"
           - "Home directory: {{ dev_home }}"
           - "Ubuntu version: {{ ubuntu_version }}"
+          - "Real user captured: {{ real_user }}"
       tags: [always]
     
     - name: Verify Ubuntu version

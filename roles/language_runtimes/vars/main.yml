@@ -1,26 +1,27 @@
 ---
 # Language Runtimes Variables
 # Phase 4: Python, Node.js, Rust, Bun
-# Version: 1.0.0
+# Version: 1.1.0 (Updated for Privilege Escalation Fix)
 
 # Python Configuration
 python_version: "3.12"
 python_package: "python@{{ python_version }}"
 
 # uv (Python package manager)
+# NOTE: Uses dev_home which is set correctly in playbook pre_tasks
 uv_package: "uv"
-uv_bin_path: "{{ ansible_env.HOME }}/.local/bin"
+uv_bin_path: "{{ dev_home }}/.local/bin"
 
 # Rust Configuration
 rust_package: "rust"
-cargo_bin_path: "{{ ansible_env.HOME }}/.cargo/bin"
+cargo_bin_path: "{{ dev_home }}/.cargo/bin"
 
 # Bun Configuration
 bun_package: "bun"
 
 # Node.js Configuration
 fnm_package: "fnm"
-fnm_data_dir: "{{ ansible_env.HOME }}/.local/share/fnm"
+fnm_data_dir: "{{ dev_home }}/.local/share/fnm"
 nodejs_version: "lts-latest"
 pnpm_package: "pnpm"
 
