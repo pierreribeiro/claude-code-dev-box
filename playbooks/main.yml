@@ -11,7 +11,7 @@
     # PRIVILEGE ESCALATION FIX: Capture real user before privilege escalation
     - name: Capture real user information
       set_fact:
-        real_user: "{{ lookup('env', 'SUDO_USER') | default(ansible_user_id) }}"
+        real_user: "{{ lookup('env', 'USER') }}"
         real_home: "{{ lookup('env', 'HOME') }}"
       become: no
       tags: [always]
